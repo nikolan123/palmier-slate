@@ -39,6 +39,7 @@ struct ShortcutsPane: View {
             ("Cmd + Shift + S", "Save As"),
             ("Cmd + I", "Import Media"),
             ("Cmd + E", "Export"),
+            ("Shift + Cmd + E", "Consolidate Project Media"),
         ]),
         ShortcutGroup(title: "Edit", shortcuts: [
             ("Cmd + Z", "Undo"),

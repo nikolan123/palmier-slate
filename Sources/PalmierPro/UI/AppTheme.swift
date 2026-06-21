@@ -126,6 +126,7 @@ enum AppTheme {
         static let medium: Double = 0.35
         static let strong: Double = 0.55
         static let prominent: Double = 0.80
+        static let sheet: Double = 0.85
     }
 
     // MARK: - Track type colors
@@ -226,6 +227,7 @@ enum AppTheme {
         static let projectCardWidth: CGFloat = 150
         static let projectCardHeight: CGFloat = 120
         static let updateOverlayWidth: CGFloat = 640
+        static let consolidationSummaryWidth: CGFloat = 360
     }
 
     enum Window {
@@ -233,7 +235,8 @@ enum AppTheme {
         static let homeMin = NSSize(width: 760, height: 480)
         static let projectDefault = NSSize(width: 1600, height: 1000)
         static let projectMin = NSSize(width: 960, height: 600)
-        static let projectTitlebarTrailingWidth: CGFloat = 280
+        static let export = NSSize(width: 860, height: 560)
+        static let exportSettingsWidth: CGFloat = 360
     }
 
     enum Caption {

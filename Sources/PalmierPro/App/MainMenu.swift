@@ -52,6 +52,14 @@ enum MainMenuBuilder {
         exportItem.keyEquivalentModifierMask = [.command]
         menu.addItem(exportItem)
 
+        let consolidateItem = NSMenuItem(
+            title: "Consolidate Project Media…",
+            action: #selector(EditorActions.showConsolidateProjectMedia(_:)),
+            keyEquivalent: "e"
+        )
+        consolidateItem.keyEquivalentModifierMask = [.command, .shift]
+        menu.addItem(consolidateItem)
+
         item.submenu = menu
         return item
     }
@@ -173,6 +181,7 @@ enum MainMenuBuilder {
     func skipFramesForward(_ sender: Any?)
     func skipFramesBackward(_ sender: Any?)
     func showExport(_ sender: Any?)
+    func showConsolidateProjectMedia(_ sender: Any?)
     func toggleMediaPanel(_ sender: Any?)
     func toggleInspectorPanel(_ sender: Any?)
     func toggleAgentPanel(_ sender: Any?)

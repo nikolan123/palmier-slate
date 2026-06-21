@@ -253,6 +253,10 @@ extension EditorWindowController: EditorActions {
         editorViewModel.showExportDialog = true
     }
 
+    @objc func showConsolidateProjectMedia(_ sender: Any?) {
+        editorViewModel.showConsolidateDialog = true
+    }
+
     @objc func copy(_ sender: Any?) {
         guard canHandleClipboardShortcut(),
               !editorViewModel.selectedClipIds.isEmpty else { return }

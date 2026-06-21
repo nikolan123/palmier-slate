@@ -32,7 +32,7 @@ struct ExportView: View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 settingsPanel
-                    .frame(width: 360)
+                    .frame(width: AppTheme.Window.exportSettingsWidth)
                 previewPanel
                     .frame(maxWidth: .infinity)
             }
@@ -40,9 +40,9 @@ struct ExportView: View {
 
             bottomBar
         }
-        .frame(width: 860, height: 560)
+        .frame(width: AppTheme.Window.export.width, height: AppTheme.Window.export.height)
         .presentationBackground {
-            AppTheme.Background.surfaceColor.opacity(0.85)
+            AppTheme.Background.surfaceColor.opacity(AppTheme.Opacity.sheet)
                 .background(.ultraThinMaterial)
         }
         .task {

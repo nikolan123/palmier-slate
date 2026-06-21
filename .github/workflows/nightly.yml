@@ -77,5 +77,4 @@ jobs:
             .build/PalmierPro-nightly.zip.sha256 \
             --target "$GITHUB_SHA" \
             --title "Palmier Pro Nightly" \
-            --notes-file "$NOTES" \
-            --prerelease
+            --notes-file "$NOTES"

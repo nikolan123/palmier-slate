@@ -90,6 +90,7 @@ final class EditorViewModel {
         didSet { UserDefaults.standard.set(timelineSnappingEnabled, forKey: "timelineSnappingEnabled") }
     }
     var showExportDialog: Bool = false
+    var showConsolidateDialog: Bool = false
     /// Clip ids currently awaiting an asynchronous replacement.
     var pendingReplacements: Set<String> = []
     var cropEditingActive: Bool = false

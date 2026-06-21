@@ -188,6 +188,9 @@ final class VideoProject: NSDocument {
                 ExportView()
                     .environment(editorViewModel)
             }
+            .sheet(isPresented: Bindable(editorViewModel).showConsolidateDialog) { [self] in
+                ConsolidateProjectMediaView(project: self)
+            }
             .sheet(item: Bindable(editorViewModel).pendingSettingsMismatch) { [editorViewModel] mismatch in
                 ProjectSettingsMismatchView(mismatch: mismatch)
                     .environment(editorViewModel)
@@ -208,8 +211,6 @@ final class VideoProject: NSDocument {
         window.restoreFrameOrCenter(autosaveName: "PalmierProWindow")
 
         window.addTitlebarSwiftUI(TitleBarLeadingView().environment(editorViewModel), side: .leading, width: AppTheme.IconSize.lg + AppTheme.Spacing.sm)
-        window.addTitlebarSwiftUI(TitleBarTrailingView().environment(editorViewModel), side: .trailing, width: AppTheme.Window.projectTitlebarTrailingWidth)
-
         let controller = EditorWindowController(editorViewModel: editorViewModel, window: window)
         controller.shouldCascadeWindows = true
         controller.installKeyMonitor()
