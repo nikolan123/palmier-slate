@@ -30,8 +30,7 @@ struct Track: Codable, Sendable, Equatable, Identifiable {
     var syncLocked: Bool = true
     var clips: [Clip] = []
 
-    /// Display-only height, not serialized. Reset to default on project open.
-    var displayHeight: CGFloat = 50
+    var displayHeight: CGFloat = Layout.trackHeight
 
     var endFrame: Int {
         var maxFrame = 0
@@ -54,20 +53,25 @@ struct Track: Codable, Sendable, Equatable, Identifiable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, type, muted, hidden, syncLocked, clips
+        case id, type, muted, hidden, syncLocked, clips, displayHeight
     }
 }
 
 extension Track {
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedDisplayHeight = (try? c.decode(CGFloat.self, forKey: .displayHeight)) ?? Layout.trackHeight
+        let displayHeight = decodedDisplayHeight.isFinite
+            ? max(TrackSize.minHeight, min(TrackSize.maxHeight, decodedDisplayHeight))
+            : Layout.trackHeight
         self.init(
             id: (try? c.decode(String.self, forKey: .id)) ?? UUID().uuidString,
             type: try c.decode(ClipType.self, forKey: .type),
             muted: (try? c.decode(Bool.self, forKey: .muted)) ?? false,
             hidden: (try? c.decode(Bool.self, forKey: .hidden)) ?? false,
             syncLocked: (try? c.decode(Bool.self, forKey: .syncLocked)) ?? true,
-            clips: (try? c.decode([Clip].self, forKey: .clips)) ?? []
+            clips: (try? c.decode([Clip].self, forKey: .clips)) ?? [],
+            displayHeight: displayHeight
         )
     }
 }

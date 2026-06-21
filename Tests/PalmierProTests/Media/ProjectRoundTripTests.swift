@@ -119,6 +119,15 @@ struct ProjectRoundTripTests {
         #expect(decoded.tracks[1].muted == true)
     }
 
+    @Test func trackDisplayHeightSurvivesRoundTrip() throws {
+        var track = Fixtures.videoTrack()
+        track.displayHeight = TrackSize.maxHeight
+        let timeline = Fixtures.timeline(tracks: [track])
+
+        let decoded = try roundTrip(timeline)
+        #expect(decoded.tracks[0].displayHeight == TrackSize.maxHeight)
+    }
+
     // MARK: - Legacy / tolerant decode
 
     @Test func trackMissingMutedFieldDecodesAsFalse() throws {
@@ -135,6 +144,22 @@ struct ProjectRoundTripTests {
         #expect(track.muted == false)
         #expect(track.hidden == false)
         #expect(track.syncLocked == true)
+        #expect(track.displayHeight == Layout.trackHeight)
+    }
+
+    @Test func trackDisplayHeightDecodesWithinSupportedRange() throws {
+        let belowMinimum = """
+        { "type": "video", "clips": [], "displayHeight": -10 }
+        """
+        let aboveMaximum = """
+        { "type": "video", "clips": [], "displayHeight": 1000 }
+        """
+
+        let shortTrack = try JSONDecoder().decode(Track.self, from: Data(belowMinimum.utf8))
+        let tallTrack = try JSONDecoder().decode(Track.self, from: Data(aboveMaximum.utf8))
+
+        #expect(shortTrack.displayHeight == TrackSize.minHeight)
+        #expect(tallTrack.displayHeight == TrackSize.maxHeight)
     }
 
     @Test func clipMissingNewFieldsDecodesWithDefaults() throws {
