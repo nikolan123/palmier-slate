@@ -41,8 +41,15 @@ ZIP="$ROOT/.build/PalmierPro.zip"
 DMG="$ROOT/.build/PalmierPro.dmg"
 
 echo "==> Building ($CONFIG)"
-swift build -c "$CONFIG"
-BIN="$(swift build -c "$CONFIG" --show-bin-path)/PalmierPro"
+BUILD_ARGS=(-c "$CONFIG")
+if [ "${SWIFT_DISABLE_INDEX_STORE:-0}" = "1" ]; then
+  BUILD_ARGS+=(--disable-index-store)
+fi
+if [ -n "${SWIFT_BUILD_JOBS:-}" ]; then
+  BUILD_ARGS+=(--jobs "$SWIFT_BUILD_JOBS")
+fi
+swift build "${BUILD_ARGS[@]}"
+BIN="$(swift build "${BUILD_ARGS[@]}" --show-bin-path)/PalmierPro"
 
 echo "==> Assembling $APP"
 rm -rf "$APP"

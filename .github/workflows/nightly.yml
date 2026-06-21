@@ -1,0 +1,81 @@
+name: Build Nightly
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nightly-release
+  cancel-in-progress: false
+
+jobs:
+  nightly:
+    name: Build and replace nightly release
+    runs-on: macos-26
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out selected revision
+        uses: actions/checkout@v4
+
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            .build/repositories
+            .build/checkouts
+            ~/Library/Caches/org.swift.swiftpm
+          key: swiftpm-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('Package.resolved') }}
+          restore-keys: |
+            swiftpm-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Build release app
+        env:
+          SWIFT_DISABLE_INDEX_STORE: "1"
+          SWIFT_BUILD_JOBS: "3"
+        run: scripts/bundle.sh release
+
+      - name: Verify app
+        run: |
+          codesign --verify --deep --strict --verbose=2 .build/PalmierPro.app
+          test "$(uname -m)" = "arm64"
+          file .build/PalmierPro.app/Contents/MacOS/PalmierPro | grep -q "arm64"
+          plutil -lint .build/PalmierPro.app/Contents/Info.plist
+
+      - name: Package nightly
+        run: |
+          rm -f .build/PalmierPro-nightly.zip .build/PalmierPro-nightly.zip.sha256
+          ditto -c -k --sequesterRsrc --keepParent \
+            .build/PalmierPro.app \
+            .build/PalmierPro-nightly.zip
+          shasum -a 256 .build/PalmierPro-nightly.zip \
+            > .build/PalmierPro-nightly.zip.sha256
+
+      - name: Replace nightly release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete nightly --cleanup-tag --yes || true
+          gh api \
+            --method DELETE \
+            "repos/${GITHUB_REPOSITORY}/git/refs/tags/nightly" \
+            >/dev/null 2>&1 || true
+
+          NOTES="$(mktemp)"
+          {
+            echo "Automated nightly build from commit \`${GITHUB_SHA}\`."
+            echo
+            echo "Built for Apple silicon on macOS 26."
+            echo
+            echo "This build is ad-hoc signed for local testing."
+          } > "$NOTES"
+
+          gh release create nightly \
+            .build/PalmierPro-nightly.zip \
+            .build/PalmierPro-nightly.zip.sha256 \
+            --target "$GITHUB_SHA" \
+            --title "Palmier Pro Nightly" \
+            --notes-file "$NOTES" \
+            --prerelease
