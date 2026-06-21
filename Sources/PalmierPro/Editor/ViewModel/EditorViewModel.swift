@@ -11,6 +11,17 @@ final class PreviewPlayheadState {
 @MainActor
 final class EditorViewModel {
 
+    private static let timelineZoomScaleKey = "timelineZoomScale"
+
+    static var storedTimelineZoomScale: Double? {
+        guard let number = UserDefaults.standard.object(forKey: timelineZoomScaleKey) as? NSNumber else {
+            return nil
+        }
+        let value = number.doubleValue
+        guard value.isFinite, value > 0 else { return nil }
+        return min(Zoom.max, max(Zoom.floor, value))
+    }
+
     // MARK: - Persisted state (synced with VideoProject)
 
     var timeline = Timeline() {
@@ -53,7 +64,16 @@ final class EditorViewModel {
     var selectedFolderIds: Set<String> = []
     var pendingSwapClipId: String?
     var clipClipboard: [ClipClipboardEntry] = []
-    var zoomScale: Double = Defaults.pixelsPerFrame
+    private(set) var zoomScale: Double = EditorViewModel.storedTimelineZoomScale ?? Defaults.pixelsPerFrame
+
+    func setTimelineZoomScale(_ value: Double, persist: Bool = true) {
+        guard value.isFinite, value > 0 else { return }
+        let clampedValue = min(Zoom.max, max(Zoom.floor, value))
+        zoomScale = clampedValue
+        if persist {
+            UserDefaults.standard.set(clampedValue, forKey: Self.timelineZoomScaleKey)
+        }
+    }
     var canvasZoom: CGFloat = 1.0 {
         didSet {
             if canvasZoom <= 1.0 { canvasOffset = .zero }

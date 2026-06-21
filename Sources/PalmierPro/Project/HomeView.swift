@@ -187,7 +187,6 @@ final class HomeWindowController: NSWindowController {
         window.setContentSize(AppTheme.Window.homeDefault)
         window.minSize = AppTheme.Window.homeMin
         window.title = "Palmier Pro"
-        window.setFrameAutosaveName("PalmierProHome-v2")
         window.appearance = NSAppearance(named: .darkAqua)
         window.backgroundColor = AppTheme.Background.base.withAlphaComponent(0.4)
         window.isOpaque = false
@@ -196,7 +195,7 @@ final class HomeWindowController: NSWindowController {
         window.isMovableByWindowBackground = false
         window.styleMask.insert(.fullSizeContentView)
         window.collectionBehavior = [.fullScreenNone]
-        window.center()
+        window.restoreFrameOrCenter(autosaveName: "PalmierProHome-v2")
 
         super.init(window: window)
     }

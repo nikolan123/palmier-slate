@@ -199,12 +199,11 @@ final class VideoProject: NSDocument {
         let window = NSWindow(contentViewController: hostingController)
         window.setContentSize(AppTheme.Window.projectDefault)
         window.minSize = AppTheme.Window.projectMin
-        window.setFrameAutosaveName("PalmierProWindow")
         window.appearance = NSAppearance(named: .darkAqua)
         window.titleVisibility = .visible
         window.titlebarAppearsTransparent = true
         window.backgroundColor = NSColor(AppTheme.Background.surfaceColor)
-        window.center()
+        window.restoreFrameOrCenter(autosaveName: "PalmierProWindow")
 
         window.addTitlebarSwiftUI(TitleBarLeadingView().environment(editorViewModel), side: .leading, width: AppTheme.IconSize.lg + AppTheme.Spacing.sm)
         window.addTitlebarSwiftUI(TitleBarTrailingView().environment(editorViewModel), side: .trailing, width: AppTheme.Window.projectTitlebarTrailingWidth)

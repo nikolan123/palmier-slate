@@ -159,7 +159,6 @@ final class SettingsWindowController: NSWindowController {
         window.setContentSize(NSSize(width: 980, height: 640))
         window.minSize = NSSize(width: 760, height: 480)
         window.title = "Settings"
-        window.setFrameAutosaveName("PalmierProSettings-v2")
         window.appearance = NSAppearance(named: .darkAqua)
         window.backgroundColor = AppTheme.Background.base.withAlphaComponent(0.4)
         window.isOpaque = false
@@ -167,7 +166,7 @@ final class SettingsWindowController: NSWindowController {
         window.titlebarAppearsTransparent = true
         window.isMovableByWindowBackground = false
         window.styleMask.insert(.fullSizeContentView)
-        window.center()
+        window.restoreFrameOrCenter(autosaveName: "PalmierProSettings-v2")
         self.hosting = hosting
         super.init(window: window)
     }

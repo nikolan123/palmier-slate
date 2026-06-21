@@ -102,7 +102,6 @@ final class HelpWindowController: NSWindowController {
         window.setContentSize(NSSize(width: 900, height: 560))
         window.minSize = NSSize(width: 820, height: 520)
         window.title = "Help"
-        window.setFrameAutosaveName("PalmierProHelp-v1")
         window.appearance = NSAppearance(named: .darkAqua)
         window.backgroundColor = AppTheme.Background.base.withAlphaComponent(0.4)
         window.isOpaque = false
@@ -110,7 +109,7 @@ final class HelpWindowController: NSWindowController {
         window.titlebarAppearsTransparent = true
         window.isMovableByWindowBackground = false
         window.styleMask.insert(.fullSizeContentView)
-        window.center()
+        window.restoreFrameOrCenter(autosaveName: "PalmierProHelp-v1")
         self.hosting = hosting
         super.init(window: window)
     }

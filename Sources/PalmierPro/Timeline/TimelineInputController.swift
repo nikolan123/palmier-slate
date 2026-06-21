@@ -702,7 +702,7 @@ final class TimelineInputController {
 
         let newScale = max(editor.minZoomScale, min(Zoom.max, editor.zoomScale * factor))
         guard newScale != editor.zoomScale else { return }
-        editor.zoomScale = newScale
+        editor.setTimelineZoomScale(newScale)
 
         if let scrollView = view.enclosingScrollView {
             let scrollX = max(0, frameUnderCursor * editor.zoomScale - anchorViewportX)

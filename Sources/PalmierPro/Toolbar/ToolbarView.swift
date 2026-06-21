@@ -54,7 +54,7 @@ struct ToolbarView: View {
                 // Log-mapped so slider travel is uniform per zoom factor
                 let zoomBinding = Binding(
                     get: { log(editor.zoomScale) },
-                    set: { editor.zoomScale = exp($0) }
+                    set: { editor.setTimelineZoomScale(exp($0)) }
                 )
                 Slider(value: zoomBinding, in: log(editor.minZoomScale)...log(Zoom.max))
                     .controlSize(.mini)
