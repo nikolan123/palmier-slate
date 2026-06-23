@@ -22,6 +22,7 @@ This fork is local-first. Preserve that policy during normal development and ups
 - Allowed network paths are currently limited to user-enabled Anthropic calls and explicit local model downloads, such as Hugging Face model downloads. Do not introduce other background network calls without documenting and confirming the policy change.
 - `import_media` for MCP/agent use is local-only: local paths, local directories, or inline bytes. Do not reintroduce URL download imports.
 - Do not reintroduce localized README files unless the user asks for them.
+- Do not add automatic CI workflows that run on push or pull request unless the user explicitly asks for them. Manual workflows such as the nightly release workflow are allowed.
 
 ## Upstream merge policy
 
@@ -29,6 +30,7 @@ When merging upstream, keep useful editor improvements but filter them through t
 
 - Prefer upstream fixes for editor stability, rendering, timeline behavior, media import, project I/O, export, tests, and local features.
 - Reject or remove upstream changes that reintroduce telemetry, account/subscription UI, Clerk/Convex/Sentry/Sparkle dependencies, hosted generation services, updater/changelog resources tied to hosted distribution, or localized README files.
+- Reject or remove upstream automatic CI workflows. Keep manual-only workflows unless the user asks otherwise.
 - If upstream adds package dependencies, inspect `Package.swift` and `Package.resolved`; keep only dependencies still needed by the local-first build.
 - If conflicts touch project I/O or layout persistence, preserve prior local behavior unless upstream has a clear stability fix. Combine deliberately, then run source-level checks.
 - After resolving a merge, scan for rejected-policy symbols such as `Telemetry`, `Sentry`, `Clerk`, `Convex`, `AccountService`, `BackendConfig`, `GenerationService`, `PalmierClient`, and `telemetry:`.
