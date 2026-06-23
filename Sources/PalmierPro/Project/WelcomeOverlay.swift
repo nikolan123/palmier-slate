@@ -30,12 +30,9 @@ struct WelcomeOverlay: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             heroImage
-            HStack(spacing: AppTheme.Spacing.sm) {
-                Button("Skip") { onDismiss() }
-                    .buttonStyle(.capsule(.secondary, size: .regular))
-                    .keyboardShortcut(.cancelAction)
+            HStack {
                 Spacer()
-                Button("Get started") { onDismiss() }
+                Button("Get Started") { onDismiss() }
                     .buttonStyle(.capsule(.prominent, size: .regular))
                     .keyboardShortcut(.defaultAction)
             }
