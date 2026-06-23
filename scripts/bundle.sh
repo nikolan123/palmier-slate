@@ -36,9 +36,10 @@ fi
 SIGNING_IDENTITY="${SIGNING_IDENTITY:-Developer ID Application: Palmier, Inc. (MMFLRC7562)}"
 NOTARY_PROFILE="${NOTARY_PROFILE:-palmier-notary}"
 RESOURCES="$ROOT/Sources/PalmierPro/Resources"
-APP="$ROOT/.build/PalmierPro.app"
-ZIP="$ROOT/.build/PalmierPro.zip"
-DMG="$ROOT/.build/PalmierPro.dmg"
+APP_NAME="Palmier Slate"
+APP="$ROOT/.build/$APP_NAME.app"
+ZIP="$ROOT/.build/PalmierSlate.zip"
+DMG="$ROOT/.build/PalmierSlate.dmg"
 
 echo "==> Building ($CONFIG)"
 BUILD_ARGS=(-c "$CONFIG")
@@ -133,11 +134,11 @@ rm -f "$ZIP"
 echo "==> Building DMG"
 rm -f "$DMG"
 STAGING="$(mktemp -d)"
-cp -R "$APP" "$STAGING/PalmierPro.app"
+cp -R "$APP" "$STAGING/$APP_NAME.app"
 ln -s /Applications "$STAGING/Applications"
 cp "$RESOURCES/AppIcon.icns" "$STAGING/.VolumeIcon.icns"
 hdiutil create \
-  -volname "PalmierPro" \
+  -volname "$APP_NAME" \
   -srcfolder "$STAGING" \
   -ov -format UDZO \
   "$DMG"

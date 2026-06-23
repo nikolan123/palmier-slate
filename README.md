@@ -8,7 +8,7 @@ This fork removes telemetry, accounts, subscriptions, hosted generation, and mos
 
 Why? Because Palmier Pro is a great editor. It feels good to use, it's modern, open-source, native, and lightweight. It is lighter than FCP/Premiere/DaVinci, while still being more usable than all other open-source editors I have tried.
 
-<a href="https://github.com/nikolan123/palmier-pro/releases/latest/">
+<a href="https://github.com/nikolan123/palmier-slate/releases/latest/">
   <img src="./assets/macos-badge.png" alt="Download Palmier Slate for macOS" width="180" />
 </a>
 

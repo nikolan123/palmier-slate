@@ -29,7 +29,7 @@ fi
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PLIST="$ROOT/Sources/PalmierPro/Resources/Info.plist"
-DMG="$ROOT/.build/PalmierPro.dmg"
+DMG="$ROOT/.build/PalmierSlate.dmg"
 cd "$ROOT"
 
 echo "==> Preflight"
@@ -103,4 +103,4 @@ gh release create "$TAG" "$DMG" --title "$TAG" --notes-file "$NOTES_CLEAN"
 
 echo ""
 echo "==> Released $TAG"
-echo "    https://github.com/palmier-io/palmier-pro/releases/tag/$TAG"
+echo "    https://github.com/nikolan123/palmier-slate/releases/tag/$TAG"

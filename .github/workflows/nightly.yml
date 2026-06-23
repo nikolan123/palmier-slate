@@ -39,19 +39,19 @@ jobs:
 
       - name: Verify app
         run: |
-          codesign --verify --deep --strict --verbose=2 .build/PalmierPro.app
+          codesign --verify --deep --strict --verbose=2 ".build/Palmier Slate.app"
           test "$(uname -m)" = "arm64"
-          file .build/PalmierPro.app/Contents/MacOS/PalmierPro | grep -q "arm64"
-          plutil -lint .build/PalmierPro.app/Contents/Info.plist
+          file ".build/Palmier Slate.app/Contents/MacOS/PalmierPro" | grep -q "arm64"
+          plutil -lint ".build/Palmier Slate.app/Contents/Info.plist"
 
       - name: Package nightly
         run: |
-          rm -f .build/PalmierPro-nightly.zip .build/PalmierPro-nightly.zip.sha256
+          rm -f .build/PalmierSlate-nightly.zip .build/PalmierSlate-nightly.zip.sha256
           ditto -c -k --sequesterRsrc --keepParent \
-            .build/PalmierPro.app \
-            .build/PalmierPro-nightly.zip
-          shasum -a 256 .build/PalmierPro-nightly.zip \
-            > .build/PalmierPro-nightly.zip.sha256
+            ".build/Palmier Slate.app" \
+            .build/PalmierSlate-nightly.zip
+          shasum -a 256 .build/PalmierSlate-nightly.zip \
+            > .build/PalmierSlate-nightly.zip.sha256
 
       - name: Replace nightly release
         env:
@@ -73,8 +73,8 @@ jobs:
           } > "$NOTES"
 
           gh release create nightly \
-            .build/PalmierPro-nightly.zip \
-            .build/PalmierPro-nightly.zip.sha256 \
+            .build/PalmierSlate-nightly.zip \
+            .build/PalmierSlate-nightly.zip.sha256 \
             --target "$GITHUB_SHA" \
-            --title "Palmier Pro Nightly" \
+            --title "Palmier Slate Nightly" \
             --notes-file "$NOTES"

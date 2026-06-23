@@ -13,24 +13,26 @@ done
 
 "$ROOT/scripts/bundle.sh" debug --fast
 
+APP="$ROOT/.build/Palmier Slate.app"
+
 if ! $stream; then
-    open "$ROOT/.build/PalmierPro.app"
+    open "$APP"
     exit 0
 fi
 
-echo "Streaming OSLog (subsystem=io.palmier.pro). Ctrl-C to quit app and stop." >&2
+echo "Streaming OSLog (subsystem=io.palmier.slate). Ctrl-C to quit app and stop." >&2
 echo >&2
 
 cleanup() {
-    pid=$(pgrep -f "PalmierPro.app/Contents/MacOS/PalmierPro" | head -1 || true)
+    pid=$(pgrep -f "Palmier Slate.app/Contents/MacOS/PalmierPro" | head -1 || true)
     if [ -n "$pid" ]; then
-        osascript -e 'quit app "PalmierPro"' 2>/dev/null || kill "$pid" 2>/dev/null || true
+        osascript -e 'quit app "Palmier Slate"' 2>/dev/null || kill "$pid" 2>/dev/null || true
     fi
 }
 trap cleanup INT TERM EXIT
 
-( sleep 0.5 && open "$ROOT/.build/PalmierPro.app" ) &
+( sleep 0.5 && open "$APP" ) &
 log stream \
-    --predicate 'subsystem == "io.palmier.pro"' \
+    --predicate 'subsystem == "io.palmier.slate"' \
     --level info \
     --style compact

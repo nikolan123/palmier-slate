@@ -1,6 +1,6 @@
-# PalmierPro
+# Palmier Slate
 
-AI-native macOS video editor. Swift 6.2, SwiftUI + AppKit, AVFoundation. macOS 26 only, arm64 only. Non-sandboxed Developer ID app.
+Local-first fork of Palmier Pro. Swift 6.2, SwiftUI + AppKit, AVFoundation. macOS 26 only, arm64 only. Non-sandboxed Developer ID app.
 
 ## Build
 
@@ -42,6 +42,17 @@ When merging upstream, keep useful editor improvements but filter them through t
 - When merging major upstream changes, document any new accepted or rejected upstream policy here if it affects future agent behavior.
 - Do not rely on chat history for durable repository rules.
 
+## Branding
+
+This fork is branded as Palmier Slate in user-facing app, packaging, release, and documentation surfaces.
+
+- Use `Palmier Slate` for visible app names, menus, onboarding, dialogs, README copy, release titles, packaged `.app` names, DMG volume names, and downloadable artifact names.
+- Use `nikolan123/palmier-slate` for this fork's GitHub repository references.
+- Use `io.palmier.slate` for this fork's bundle identifier, URL scheme, app group/prefs/logging subsystem, and fork-owned identifiers.
+- Keep upstream-compatible implementation names such as the Swift package/target/module path `PalmierPro`, executable `Contents/MacOS/PalmierPro`, and existing MCP command/server names unless the user explicitly asks for a deeper structural rename.
+- Keep project document branding generic where possible: `Palmier Project` and `.palmier` remain acceptable for file compatibility.
+- During upstream merges, preserve fork branding and re-apply it to new user-facing strings, packaging scripts, and release workflows.
+
 ## Code style
 
 - Keep comments minimal. Only write one when the *why* is non-obvious. Don't restate what the code does, don't narrate the current change, don't leave `// removed X` breadcrumbs. One short line max — no multi-line comment blocks or paragraph docstrings.
@@ -71,6 +82,5 @@ Rule: **any drop target that spans an area containing other drop targets must us
 
 ## Voice
 
-Palmier Pro speaks like a quietly capable native Mac app for filmmakers: direct, technical, calm, and 
-confident. Prefer Apple HIG-style terseness over warmth. Never chatty or cute. Never marketing. When the
-product needs to ask for action, lead with the action verb; when it reports state, name the thing.
+Palmier Slate speaks like a quietly capable native Mac app for filmmakers: direct, technical, calm, and confident.
+Prefer Apple HIG-style terseness over warmth. Never chatty or cute. Never marketing. When the product needs to ask for action, lead with the action verb; when it reports state, name the thing.
