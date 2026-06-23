@@ -60,35 +60,65 @@ struct TextTab: View {
                 RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
                     .fill(Color.white.opacity(AppTheme.Opacity.hint))
             )
-            captionGroupRow
+            captionGroupBlock
         }
     }
 
-    private var captionGroupRow: some View {
-        InspectorRow(
-            icon: "captions.bubble",
-            label: "Caption Group",
-            labelHelp: "Text clips with the same caption group export as SRT captions. Normal titles usually have none."
-        ) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+    private var captionGroupBlock: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+            HStack(spacing: AppTheme.Spacing.xs) {
+                Image(systemName: "captions.bubble")
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
+                    .frame(width: AppTheme.IconSize.xs, alignment: .leading)
+                Text("Caption Group")
+                    .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
+                Image(systemName: "info.circle")
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(AppTheme.Text.tertiaryColor)
+                    .frame(width: AppTheme.IconSize.xs, height: AppTheme.IconSize.xs)
+                    .contentShape(Rectangle())
+                    .help("Text clips with a caption group export with Captions Only. Normal titles usually have none.")
+            }
+
+            HStack(spacing: AppTheme.Spacing.xs) {
                 Text(captionGroupDisplay)
                     .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium, design: .monospaced))
                     .foregroundStyle(clip.captionGroupId == nil ? AppTheme.Text.tertiaryColor : AppTheme.Text.secondaryColor)
                     .lineLimit(1)
+                    .truncationMode(.middle)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, AppTheme.Spacing.sm)
+                    .padding(.vertical, AppTheme.Spacing.xs)
+                    .background(RoundedRectangle(cornerRadius: AppTheme.Radius.sm).fill(AppTheme.Background.raisedColor))
+                    .overlay(RoundedRectangle(cornerRadius: AppTheme.Radius.sm).strokeBorder(AppTheme.Border.subtleColor, lineWidth: AppTheme.BorderWidth.thin))
                     .help(clip.captionGroupId ?? "No caption group")
-                Button("Edit") { editingCaptionGroup = true }
-                    .buttonStyle(.plain)
-                    .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
-                    .foregroundStyle(AppTheme.Text.secondaryColor)
-                Button("Remove") {
+
+                captionGroupIconButton(systemImage: "pencil", help: "Edit caption group") {
+                    editingCaptionGroup = true
+                }
+
+                captionGroupIconButton(systemImage: "xmark", help: "Remove caption group") {
                     editor.commitClipProperty(clipId: clip.id) { $0.captionGroupId = nil }
                 }
-                .buttonStyle(.plain)
-                .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
-                .foregroundStyle(AppTheme.Text.tertiaryColor)
                 .disabled(clip.captionGroupId == nil)
+                .opacity(clip.captionGroupId == nil ? AppTheme.Opacity.medium : AppTheme.Opacity.opaque)
             }
         }
+        .padding(.top, AppTheme.Spacing.xs)
+    }
+
+    private func captionGroupIconButton(systemImage: String, help: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.semibold))
+                .foregroundStyle(AppTheme.Text.secondaryColor)
+                .frame(width: AppTheme.IconSize.md, height: AppTheme.IconSize.md)
+                .hoverHighlight()
+        }
+        .buttonStyle(.plain)
+        .help(help)
     }
 
     private var fontRow: some View {
@@ -285,7 +315,7 @@ private struct CaptionGroupEditorSheet: View {
                 .background(RoundedRectangle(cornerRadius: AppTheme.Radius.sm).fill(AppTheme.Background.raisedColor))
                 .overlay(RoundedRectangle(cornerRadius: AppTheme.Radius.sm).strokeBorder(AppTheme.Border.subtleColor, lineWidth: AppTheme.BorderWidth.thin))
 
-            Text("Leave empty to remove this clip from SRT caption export.")
+            Text("Leave empty to remove this clip from Captions Only SRT export.")
                 .font(.system(size: AppTheme.FontSize.xs))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
 

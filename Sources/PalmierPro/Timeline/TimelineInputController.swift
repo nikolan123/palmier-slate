@@ -14,6 +14,11 @@ final class TimelineInputController {
     private var scrubWasPlaying = false
     private var playheadAutoScrollTimer: Timer?
     private var playheadAutoScrollWindowPoint: NSPoint?
+    private var timelineRangeAutoScrollTimer: Timer?
+    private var timelineRangeAutoScrollWindowPoint: NSPoint?
+    private var marqueeAutoScrollTimer: Timer?
+    private var marqueeAutoScrollWindowPoint: NSPoint?
+    private var marqueeAutoScrollExpandsLinked = true
 
     private enum TimelineRangeEdge {
         case start
@@ -186,6 +191,9 @@ final class TimelineInputController {
             }
             editor.selectedGap = hitTestGap(at: point, trackIndex: trackIndex, geometry: geometry)
             editor.isMarqueeSelecting = true
+            stopPlayheadAutoScroll()
+            stopTimelineRangeAutoScroll()
+            stopMarqueeAutoScroll()
             dragState = .marquee(DragState.MarqueeDrag(origin: point, baseSelection: editor.selectedClipIds))
         }
 
@@ -200,7 +208,20 @@ final class TimelineInputController {
             continuePlayheadScrub(windowPoint: event.locationInWindow)
             return
         }
+        if case .timelineRange = dragState {
+            continueTimelineRangeDrag(windowPoint: event.locationInWindow)
+            return
+        }
+        if case .marquee = dragState {
+            continueMarqueeDrag(
+                windowPoint: event.locationInWindow,
+                expandsLinked: !event.modifierFlags.contains(.option)
+            )
+            return
+        }
         stopPlayheadAutoScroll()
+        stopTimelineRangeAutoScroll()
+        stopMarqueeAutoScroll()
 
         let point = view.convert(event.locationInWindow, from: nil)
         let frame = geometry.frameAt(x: point.x)
@@ -209,28 +230,8 @@ final class TimelineInputController {
         case .scrubPlayhead:
             return
 
-        case .timelineRange(let drag):
-            let targets = SnapEngine.collectTargets(
-                tracks: editor.timeline.tracks,
-                playheadFrame: editor.currentFrame,
-                includePlayhead: true
-            )
-            let rangeEndFrame: Int
-            if let snap = SnapEngine.findSnap(
-                enabled: editor.timelineSnappingEnabled,
-                position: frame,
-                targets: targets,
-                state: &snapState,
-                baseThreshold: Snap.thresholdPixels,
-                pixelsPerFrame: geometry.pixelsPerFrame
-            ) {
-                snapIndicatorX = snap.x
-                rangeEndFrame = snap.frame
-            } else {
-                snapIndicatorX = nil
-                rangeEndFrame = frame
-            }
-            editor.setTimelineRange(startFrame: drag.anchorFrame, endFrame: rangeEndFrame)
+        case .timelineRange:
+            return
 
         case .moveClip(var drag):
             let candidateFrame = frame - drag.grabOffsetFrames
@@ -350,41 +351,7 @@ final class TimelineInputController {
         case .fadeKnee(let drag):
             dragState = .fadeKnee(applyFadeKneeDrag(drag, cursorFrame: frame))
 
-        case .marquee(var marq):
-            let previousRect = marq.current
-            marq.current = NSRect(
-                x: min(marq.origin.x, point.x),
-                y: min(marq.origin.y, point.y),
-                width: abs(point.x - marq.origin.x),
-                height: abs(point.y - marq.origin.y)
-            )
-            if marq.current.width > Layout.dragThreshold || marq.current.height > Layout.dragThreshold,
-               editor.selectedGap != nil {
-                editor.selectedGap = nil
-            }
-            var selected = marq.baseSelection
-            for (ti, track) in editor.timeline.tracks.enumerated() {
-                for clip in track.clips {
-                    if geometry.clipRect(for: clip, trackIndex: ti).intersects(marq.current) {
-                        selected.insert(clip.id)
-                    }
-                }
-            }
-            if !event.modifierFlags.contains(.option) {
-                selected = editor.expandToLinkGroup(selected)
-            }
-            dragState = .marquee(marq)
-            // Touch only what changed.
-            view.setNeedsDisplay(previousRect.union(marq.current).insetBy(dx: -2, dy: -2))
-            if selected != editor.selectedClipIds {
-                let flipped = selected.symmetricDifference(editor.selectedClipIds)
-                editor.selectedClipIds = selected
-                for (ti, track) in editor.timeline.tracks.enumerated() {
-                    for clip in track.clips where flipped.contains(clip.id) {
-                        view.setNeedsDisplay(geometry.clipRect(for: clip, trackIndex: ti).insetBy(dx: -2, dy: -2))
-                    }
-                }
-            }
+        case .marquee:
             return
 
         case .idle:
@@ -398,6 +365,8 @@ final class TimelineInputController {
 
     func mouseUp(with event: NSEvent, geometry: TimelineGeometry) {
         stopPlayheadAutoScroll()
+        stopTimelineRangeAutoScroll()
+        stopMarqueeAutoScroll()
 
         switch dragState {
         case .moveClip(let drag):
@@ -767,6 +736,8 @@ final class TimelineInputController {
 
     private func beginPlayheadScrub(at frame: Int) {
         stopPlayheadAutoScroll()
+        stopTimelineRangeAutoScroll()
+        stopMarqueeAutoScroll()
         dragState = .scrubPlayhead
         scrubWasPlaying = editor.isPlaying
         if scrubWasPlaying { editor.pause() }
@@ -836,7 +807,159 @@ final class TimelineInputController {
         continuePlayheadScrub(windowPoint: windowPoint)
     }
 
+    private func continueTimelineRangeDrag(windowPoint: NSPoint) {
+        guard case .timelineRange(let drag) = dragState else { return }
+        timelineRangeAutoScrollWindowPoint = windowPoint
+
+        let didScroll = view.autoScrollHorizontallyForTimelineDrag(windowPoint: windowPoint)
+        let point = view.convert(windowPoint, from: nil)
+        let geometry = view.geometry
+        let frame = geometry.frameAt(x: point.x)
+        let targets = SnapEngine.collectTargets(
+            tracks: editor.timeline.tracks,
+            playheadFrame: editor.currentFrame,
+            includePlayhead: true
+        )
+        let rangeEndFrame: Int
+        if let snap = SnapEngine.findSnap(
+            enabled: editor.timelineSnappingEnabled,
+            position: frame,
+            targets: targets,
+            state: &snapState,
+            baseThreshold: Snap.thresholdPixels,
+            pixelsPerFrame: geometry.pixelsPerFrame
+        ) {
+            snapIndicatorX = snap.x
+            rangeEndFrame = snap.frame
+        } else {
+            snapIndicatorX = nil
+            rangeEndFrame = frame
+        }
+        editor.setTimelineRange(startFrame: drag.anchorFrame, endFrame: rangeEndFrame)
+        view.needsDisplay = true
+
+        if didScroll {
+            startTimelineRangeAutoScroll()
+        } else {
+            stopTimelineRangeAutoScroll()
+        }
+    }
+
+    private func startTimelineRangeAutoScroll() {
+        guard timelineRangeAutoScrollTimer == nil else { return }
+        let timer = Timer(timeInterval: TimelineAutoScroll.interval, repeats: true) { [weak self] timer in
+            guard let self else {
+                timer.invalidate()
+                return
+            }
+            MainActor.assumeIsolated {
+                self.tickTimelineRangeAutoScroll()
+            }
+        }
+        timelineRangeAutoScrollTimer = timer
+        RunLoop.main.add(timer, forMode: .default)
+        RunLoop.main.add(timer, forMode: .eventTracking)
+    }
+
+    private func stopTimelineRangeAutoScroll() {
+        timelineRangeAutoScrollTimer?.invalidate()
+        timelineRangeAutoScrollTimer = nil
+        timelineRangeAutoScrollWindowPoint = nil
+    }
+
+    private func tickTimelineRangeAutoScroll() {
+        guard case .timelineRange = dragState,
+              let windowPoint = timelineRangeAutoScrollWindowPoint else {
+            stopTimelineRangeAutoScroll()
+            return
+        }
+        continueTimelineRangeDrag(windowPoint: windowPoint)
+    }
+
+    private func continueMarqueeDrag(windowPoint: NSPoint, expandsLinked: Bool) {
+        guard case .marquee(var marq) = dragState else { return }
+        marqueeAutoScrollWindowPoint = windowPoint
+        marqueeAutoScrollExpandsLinked = expandsLinked
+
+        let didScroll = view.autoScrollHorizontallyForTimelineDrag(windowPoint: windowPoint)
+        let point = view.convert(windowPoint, from: nil)
+        let geometry = view.geometry
+        let previousRect = marq.current
+        marq.current = NSRect(
+            x: min(marq.origin.x, point.x),
+            y: min(marq.origin.y, point.y),
+            width: abs(point.x - marq.origin.x),
+            height: abs(point.y - marq.origin.y)
+        )
+        if marq.current.width > Layout.dragThreshold || marq.current.height > Layout.dragThreshold,
+           editor.selectedGap != nil {
+            editor.selectedGap = nil
+        }
+        var selected = marq.baseSelection
+        for (ti, track) in editor.timeline.tracks.enumerated() {
+            for clip in track.clips {
+                if geometry.clipRect(for: clip, trackIndex: ti).intersects(marq.current) {
+                    selected.insert(clip.id)
+                }
+            }
+        }
+        if expandsLinked {
+            selected = editor.expandToLinkGroup(selected)
+        }
+        dragState = .marquee(marq)
+        view.setNeedsDisplay(previousRect.union(marq.current).insetBy(dx: -2, dy: -2))
+        if selected != editor.selectedClipIds {
+            let flipped = selected.symmetricDifference(editor.selectedClipIds)
+            editor.selectedClipIds = selected
+            for (ti, track) in editor.timeline.tracks.enumerated() {
+                for clip in track.clips where flipped.contains(clip.id) {
+                    view.setNeedsDisplay(geometry.clipRect(for: clip, trackIndex: ti).insetBy(dx: -2, dy: -2))
+                }
+            }
+        }
+
+        if didScroll {
+            startMarqueeAutoScroll()
+        } else {
+            stopMarqueeAutoScroll()
+        }
+    }
+
+    private func startMarqueeAutoScroll() {
+        guard marqueeAutoScrollTimer == nil else { return }
+        let timer = Timer(timeInterval: TimelineAutoScroll.interval, repeats: true) { [weak self] timer in
+            guard let self else {
+                timer.invalidate()
+                return
+            }
+            MainActor.assumeIsolated {
+                self.tickMarqueeAutoScroll()
+            }
+        }
+        marqueeAutoScrollTimer = timer
+        RunLoop.main.add(timer, forMode: .default)
+        RunLoop.main.add(timer, forMode: .eventTracking)
+    }
+
+    private func stopMarqueeAutoScroll() {
+        marqueeAutoScrollTimer?.invalidate()
+        marqueeAutoScrollTimer = nil
+        marqueeAutoScrollWindowPoint = nil
+    }
+
+    private func tickMarqueeAutoScroll() {
+        guard case .marquee = dragState,
+              let windowPoint = marqueeAutoScrollWindowPoint else {
+            stopMarqueeAutoScroll()
+            return
+        }
+        continueMarqueeDrag(windowPoint: windowPoint, expandsLinked: marqueeAutoScrollExpandsLinked)
+    }
+
     private func beginTimelineRangeEdgeDrag(_ edge: TimelineRangeEdge) {
+        stopPlayheadAutoScroll()
+        stopTimelineRangeAutoScroll()
+        stopMarqueeAutoScroll()
         guard let range = editor.validSelectedTimelineRange else { return }
         let anchorFrame: Int
         switch edge {
@@ -852,6 +975,9 @@ final class TimelineInputController {
     }
 
     private func beginTimelineRangeSelection(at frame: Int) {
+        stopPlayheadAutoScroll()
+        stopTimelineRangeAutoScroll()
+        stopMarqueeAutoScroll()
         dragState = .timelineRange(DragState.TimelineRangeDrag(anchorFrame: frame))
         snapState = SnapEngine.SnapState()
         snapIndicatorX = nil
