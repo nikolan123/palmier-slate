@@ -19,12 +19,12 @@ enum MainMenuBuilder {
 
     private static func appMenu() -> NSMenuItem {
         let item = NSMenuItem()
-        let menu = NSMenu(title: "Palmier Pro")
-        menu.addItem(withTitle: "About Palmier Pro", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        let menu = NSMenu(title: "Palmier Slate")
+        menu.addItem(withTitle: "About Palmier Slate", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         menu.addItem(.separator())
         menu.addItem(withTitle: "Settings…", action: #selector(AppDelegate.showSettings(_:)), keyEquivalent: ",")
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Quit Palmier Pro", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        menu.addItem(withTitle: "Quit Palmier Slate", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         item.submenu = menu
         return item
     }

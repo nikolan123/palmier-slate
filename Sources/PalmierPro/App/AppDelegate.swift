@@ -38,7 +38,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         quitConfirmationPending = true
         let alert = NSAlert()
-        alert.messageText = "Quit Palmier Pro?"
+        alert.messageText = "Quit Palmier Slate?"
         alert.informativeText = "The open project will close."
         alert.alertStyle = .warning
         alert.addButton(withTitle: "Quit")

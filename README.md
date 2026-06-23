@@ -1,58 +1,52 @@
 <div align="center">
 
-# Palmier Pro
+# Palmier Slate
 
-**The video editor built for AI.**
+A local-first fork of [Palmier Pro](https://github.com/palmier-io/palmier-pro).
 
-<a href="https://github.com/palmier-io/palmier-pro/releases/latest/download/PalmierPro.dmg">
-  <img src="./assets/macos-badge.png" alt="Download Palmier Pro for macOS" width="180" />
+This fork removes telemetry, accounts, subscriptions, hosted generation, and most background network connections while keeping the editor, local features, and MCP workflows.
+
+Why? Because Palmier Pro is a great editor. It feels good to use, it's modern, open-source, native, and lightweight. It is lighter than FCP/Premiere/DaVinci, while still being more usable than all other open-source editors I have tried.
+
+<a href="https://github.com/nikolan123/palmier-pro/releases/latest/">
+  <img src="./assets/macos-badge.png" alt="Download Palmier Slate for macOS" width="180" />
 </a>
 
 <sub><i>Requires macOS 26 (Tahoe) on Apple Silicon</i></sub>
 
-<a href="https://x.com/Palmier_io"><img src="https://img.shields.io/badge/Follow-%40Palmier__io-000000?style=flat&logo=x&logoColor=white" alt="Follow on X" /></a>
-<a href="https://discord.com/invite/SMVW6pKYmg"><img src="https://img.shields.io/badge/Join-Discord-5865F2?style=flat&logo=discord&logoColor=white" alt="Join Discord" /></a>
-<a href="https://www.ycombinator.com/companies/palmier"><img src="https://img.shields.io/badge/Y%20Combinator-S24-orange" alt="Y Combinator S24" /></a>
-
 </div>
-
-<img src="./assets/palmier-ui.png" alt="Palmier Pro UI" width="900" />
 
 ---
 
-Palmier Pro is an open source video editor for Mac. You and your agent can generate and edit videos together inside the timeline.
-
 ### Swift-native video editor
 
-We built Palmier Pro from scratch with Swift. The north star is Premiere Pro, with our take on integrating AI into the workflow.
-
-### Built-in Generative AI
-
-Generate videos and images with SOTA models like Seedance, Kling, Nano Banana Pro inside the timeline editor.
+Palmier Slate is built from the ground up using native frameworks.
 
 ### Integrates with your agents
 
-Connects your Claude/Codex/Cursor via MCP, or use the in-app agent to work on the same project together.
+Connect Claude, Codex, Cursor, or other MCP clients to the open project. The MCP server is local and only runs when enabled in the app.
 
 ## MCP server
 
 When the app is open, it exposes an MCP server at `http://127.0.0.1:19789/mcp` via HTTP. To connect:
 
-**Claude Code**
-```bash
-claude mcp add --transport http palmier-pro http://127.0.0.1:19789/mcp
-```
-
 **Codex**
+
 ```bash
 codex mcp add palmier-pro --url http://127.0.0.1:19789/mcp
 ```
 
+**Claude Code**
+
+```bash
+claude mcp add --transport http palmier-pro http://127.0.0.1:19789/mcp
+```
+
 **Cursor**
 
-The easiest way is go inside the app `Help` -> `MCP Instructions` -> `Install in Cursor`, or install manually by adding this to `~/.cursor/mcp.json`:
+The easiest way is to open `Help` -> `MCP Instructions` -> `Install in Cursor`, or install manually by adding this to `~/.cursor/mcp.json`:
 
-```
+```json
 {
   "mcpServers": {
     "palmier-pro": {
@@ -65,49 +59,24 @@ The easiest way is go inside the app `Help` -> `MCP Instructions` -> `Install in
 
 **Claude Desktop**
 
-We bundle a [mcpb](https://github.com/modelcontextprotocol/mcpb) with the app that allows a one click install Desktop Extension on Claude Desktop. Go to `Help` -> `MCP Instructions` -> `Install in Claude Desktop`
+The app bundles an [mcpb](https://github.com/modelcontextprotocol/mcpb) for one-click Claude Desktop installation. Go to `Help` -> `MCP Instructions` -> `Install in Claude Desktop`.
 
 ## FAQ
 
-**Is Palmier Pro fully open source?**
+**Is Palmier Slate fully open source?**
 
-The video editor (without the generative AI features) is fully open source. The MCP server and the agent chat are also open source. The only thing that is closed source is the generative AI processing.
+Yes.
 
 **Is it free?**
 
-The editor is free. You can download it with no login required, and use it as a video editor like CapCut or Adobe Premiere. You can also use the MCP server locally, and start experimenting using Claude Code/Desktop or Cursor to interact with your timeline editor.
-
-This fork does not include account, subscription, telemetry, or hosted generation features.
+Yes.
 
 **What platforms does it support?**
 
 macOS 26 (Tahoe) on Apple Silicon only.
 
-See [FAQ.md](FAQ.md) for more.
-
-## Development
-
-See [CONTRIBUTING.md](CONTRIBUTING.md)
-
-## Community &amp; Support
-
-- **Discord:** Join the community on **[Discord](https://discord.com/invite/SMVW6pKYmg)**.
-- **Twitter / X:** Follow **[@Palmier_io](https://x.com/Palmier_io)** for updates and announcements.
-- **Instagram:** Follow [@palmier.io](https://www.instagram.com/palmier.io) 
-- **Feedback &amp; Support:** Create a [Github Issue](https://github.com/palmier-io/palmier-pro/issues) or email us at founders@palmier.io
-
-## Star History
-
-<a href="https://www.star-history.com/?type=date&repos=palmier-io%2Fpalmier-pro">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=palmier-io/palmier-pro&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=palmier-io/palmier-pro&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=palmier-io/palmier-pro&type=date&legend=top-left" />
- </picture>
-</a>
-
 ## License
 
 Copyright (C) 2026 Palmier, Inc.
 
-Palmier Pro is open source under [GPLv3](LICENSE).
+Palmier Slate is a fork of Palmier Pro. Original code remains copyright Palmier, Inc.; fork changes are distributed under [GPLv3](LICENSE).

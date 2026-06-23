@@ -153,7 +153,7 @@ final class TourController {
         steps.append(TourStep(
             kind: .outro,
             title: "You're all set",
-            instruction: "Start creating, or explore these to get the most out of Palmier Pro."
+            instruction: "Start creating, or explore these to get the most out of Palmier Slate."
         ))
         return steps
     }

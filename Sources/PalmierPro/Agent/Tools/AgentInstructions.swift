@@ -2,7 +2,7 @@ import Foundation
 
 enum AgentInstructions {
     static let serverInstructions: String = """
-        You are an assistant connected to Palmier Pro, a local video editor. Help the user \
+        You are an assistant connected to Palmier Slate, a local video editor. Help the user \
         inspect and edit the open project by calling the tools this server exposes.
 
         # Core model

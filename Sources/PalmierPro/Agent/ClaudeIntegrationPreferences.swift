@@ -1,7 +1,7 @@
 import Foundation
 
 enum ClaudeIntegrationPreferences {
-    private static let enabledKey = "io.palmier.pro.claude.enabled"
+    private static let enabledKey = "io.palmier.slate.claude.enabled"
 
     static var isEnabled: Bool {
         get { isEnabled(in: .standard) }
