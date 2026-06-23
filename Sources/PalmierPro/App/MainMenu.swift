@@ -142,6 +142,10 @@ enum MainMenuBuilder {
         maximizeItem.keyEquivalentModifierMask = []
         menu.addItem(maximizeItem)
 
+        let previewFullscreenItem = NSMenuItem(title: "Fullscreen Preview", action: #selector(EditorActions.togglePreviewFullscreen(_:)), keyEquivalent: "F")
+        previewFullscreenItem.keyEquivalentModifierMask = [.command, .shift]
+        menu.addItem(previewFullscreenItem)
+
         menu.addItem(.separator())
         menu.addItem(layoutSubmenuItem())
         menu.addItem(.separator())
@@ -205,6 +209,7 @@ enum MainMenuBuilder {
     func toggleInspectorPanel(_ sender: Any?)
     func toggleAgentPanel(_ sender: Any?)
     func toggleMaximizePanel(_ sender: Any?)
+    func togglePreviewFullscreen(_ sender: Any?)
     func setLayoutDefault(_ sender: Any?)
     func setLayoutMedia(_ sender: Any?)
     func setLayoutVertical(_ sender: Any?)

@@ -383,6 +383,10 @@ extension EditorWindowController: EditorActions {
         editorViewModel.agentPanelVisible.toggle()
     }
     @objc func toggleMaximizePanel(_ sender: Any?) { toggleMaximizePanelAction() }
+    @objc func togglePreviewFullscreen(_ sender: Any?) {
+        editorViewModel.maximizedPanel = editorViewModel.maximizedPanel == .preview ? nil : .preview
+        editorViewModel.focusedPanel = .preview
+    }
     @objc func setLayoutDefault(_ sender: Any?) { editorViewModel.layoutPreset = .default }
     @objc func setLayoutMedia(_ sender: Any?) { editorViewModel.layoutPreset = .media }
     @objc func setLayoutVertical(_ sender: Any?) { editorViewModel.layoutPreset = .vertical }
@@ -409,6 +413,9 @@ extension EditorWindowController: EditorActions {
         case #selector(toggleMaximizePanel(_:)):
             menuItem.state = editorViewModel.maximizedPanel != nil ? .on : .off
             return editorViewModel.maximizedPanel != nil || editorViewModel.focusedPanel != nil
+        case #selector(togglePreviewFullscreen(_:)):
+            menuItem.state = editorViewModel.maximizedPanel == .preview ? .on : .off
+            return true
         case #selector(setLayoutDefault(_:)):
             menuItem.state = editorViewModel.layoutPreset == .default ? .on : .off
             return true

@@ -53,6 +53,7 @@ struct ShortcutsPane: View {
         ]),
         ShortcutGroup(title: "View", shortcuts: [
             ("Cmd + F", "Full Screen"),
+            ("Cmd + Shift + F", "Fullscreen Preview"),
             ("Ctrl + Tab", "Next Preview Tab"),
             ("Ctrl + Shift + Tab", "Previous Preview Tab"),
             ("`", "Maximize Focused Panel"),

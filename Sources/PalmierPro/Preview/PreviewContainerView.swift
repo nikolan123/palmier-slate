@@ -6,6 +6,7 @@ struct PreviewContainerView: View {
 
     private var isTimeline: Bool { editor.activePreviewTab == .timeline }
     private var isImage: Bool { editor.activePreviewTab.clipType == .image }
+    private var isPreviewMaximized: Bool { editor.maximizedPanel == .preview }
 
     @State private var hoveredTabId: String?
 
@@ -41,6 +42,11 @@ struct PreviewContainerView: View {
                     }
                 }
                 .frame(width: scaledWidth, height: scaledHeight)
+                .simultaneousGesture(
+                    TapGesture(count: 2).onEnded {
+                        togglePreviewFullscreen()
+                    }
+                )
                 .overlay(
                     Rectangle()
                         .stroke(Color.white.opacity(editor.canvasZoom < 1.0 ? AppTheme.Opacity.moderate : 0), lineWidth: AppTheme.BorderWidth.thin)
@@ -532,6 +538,7 @@ struct PreviewContainerView: View {
             }
 
             overflowMenu
+            fullscreenButton
         }
     }
 
@@ -602,6 +609,25 @@ struct PreviewContainerView: View {
         .fixedSize()
         .hoverHighlight(cornerRadius: AppTheme.Radius.sm)
         .help("More")
+    }
+
+    private var fullscreenButton: some View {
+        Button {
+            togglePreviewFullscreen()
+        } label: {
+            Image(systemName: isPreviewMaximized ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                .font(.system(size: AppTheme.FontSize.sm, weight: .medium))
+                .foregroundStyle(AppTheme.Text.secondaryColor)
+                .frame(width: AppTheme.IconSize.md, height: AppTheme.IconSize.md)
+                .hoverHighlight(cornerRadius: AppTheme.Radius.sm, isActive: isPreviewMaximized)
+        }
+        .buttonStyle(.plain)
+        .help(isPreviewMaximized ? "Exit Preview Fullscreen" : "Fullscreen Preview")
+    }
+
+    private func togglePreviewFullscreen() {
+        editor.maximizedPanel = isPreviewMaximized ? nil : .preview
+        editor.focusedPanel = .preview
     }
 
     private func closeButton(tabId: String) -> some View {
