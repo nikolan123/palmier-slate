@@ -57,7 +57,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete nightly --cleanup-tag --yes || true
+          if ! gh release delete nightly --cleanup-tag --yes; then
+            echo "No existing nightly release to delete, or deletion was not permitted."
+          fi
           gh api \
             --method DELETE \
             "repos/${GITHUB_REPOSITORY}/git/refs/tags/nightly" \
